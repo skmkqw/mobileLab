@@ -17,7 +17,7 @@
             android:exported="false"
             android:theme="@style/Theme.Lab01" />
         <activity
-            android:name="pm.wsei.pam.lab02.Lab02Activity"
+            android:name="pl.wsei.pam.lab01.Lab01Activity"
             android:exported="false"
             android:label="@string/title_activity_lab02"
             android:theme="@style/Theme.Lab01" />
@@ -25,7 +25,7 @@
             android:name=".Lab01Activity"
             android:exported="false" />
         <activity
-            android:name="pl.wsei.pam.MainActivity"
+            android:name="pl.wsei.pam.lab01.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
