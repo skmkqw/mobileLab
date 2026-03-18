@@ -1,15 +1,14 @@
 package pl.wsei.pam.lab03
 
 import android.os.Bundle
-import android.view.Gravity
 import android.widget.GridLayout
-import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
 import pl.wsei.pam.lab01.R
 
 class Lab03Activity : AppCompatActivity() {
 
     private lateinit var mBoard: GridLayout
+    private lateinit var mBoardModel: MemoryBoardView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,24 +23,10 @@ class Lab03Activity : AppCompatActivity() {
         mBoard.rowCount = rows
         mBoard.columnCount = cols
 
-        for (row in 0 until rows) {
-            for (col in 0 until cols) {
-                val btn = ImageButton(this).also {
-                    it.tag = "${row}x${col}"
-                    val layoutParams = GridLayout.LayoutParams()
+        mBoardModel = MemoryBoardView(mBoard, cols, rows)
 
-                    it.setImageResource(R.drawable.baseline_rocket_lauch_24)
-
-                    layoutParams.width = 0
-                    layoutParams.height = 0
-                    layoutParams.setGravity(Gravity.CENTER)
-                    layoutParams.columnSpec = GridLayout.spec(col, 1, 1f)
-                    layoutParams.rowSpec = GridLayout.spec(row, 1, 1f)
-                    it.layoutParams = layoutParams
-
-                    mBoard.addView(it)
-                }
-            }
+        mBoardModel.setOnGameChangeListener { event ->
+            // Logika reagowania na odkrycie karty, np. toast lub punkty
         }
     }
 }
