@@ -1,22 +1,44 @@
 package pl.wsei.pam.lab02
 
+import android.content.Intent
 import android.os.Bundle
-import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.navigateUp
-import androidx.navigation.ui.setupActionBarWithNavController
 import pl.wsei.pam.lab01.R
 import pl.wsei.pam.lab01.databinding.ActivityLab02Binding
+import pl.wsei.pam.lab03.Lab03Activity
 
 class Lab02Activity : AppCompatActivity() {
 
-    private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityLab02Binding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContentView(R.layout.activity_lab02)
+
+        binding.main66Board.setOnClickListener {
+            launchLab03(6, 6)
+        }
+
+        binding.main44Board.setOnClickListener {
+            launchLab03(4, 4)
+        }
+
+        binding.main32Board.setOnClickListener {
+            launchLab03(3, 2)
+        }
+
+        binding.main43Board.setOnClickListener {
+            launchLab03(4, 3)
+        }
+    }
+
+    private fun launchLab03(rows: Int, cols: Int) {
+        val intent = Intent(this, Lab03Activity::class.java)
+
+        val size = intArrayOf(rows, cols)
+        intent.putExtra("size", size)
+
+        startActivity(intent)
     }
 }
