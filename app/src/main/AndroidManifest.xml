@@ -13,13 +13,10 @@ xmlns:tools="http://schemas.android.com/tools">
     tools:targetApi="31">
     <activity
         android:name="pl.wsei.pam.lab02.Lab02Activity"
-        android:exported="false"
-        android:theme="@style/Theme.Lab01" />
+        android:exported="false" />
     <activity
         android:name="pl.wsei.pam.lab01.Lab01Activity"
-        android:exported="false"
-        android:label="@string/title_activity_lab02"
-        android:theme="@style/Theme.Lab01" />
+        android:exported="false" />
 
     <activity
         android:name="pl.wsei.pam.lab01.MainActivity"
@@ -34,8 +31,7 @@ xmlns:tools="http://schemas.android.com/tools">
     <activity
         android:name="pl.wsei.pam.lab03.Lab03Activity"
         android:exported="false"
-        android:label="@string/title_activity_lab03"
-        android:theme="@style/Theme.Lab01" />
+    />
 
 </application>
 </manifest>

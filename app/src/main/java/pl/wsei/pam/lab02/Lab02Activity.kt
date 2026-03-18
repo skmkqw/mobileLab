@@ -3,7 +3,6 @@ package pl.wsei.pam.lab02
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import pl.wsei.pam.lab01.R
 import pl.wsei.pam.lab01.databinding.ActivityLab02Binding
 import pl.wsei.pam.lab03.Lab03Activity
 
@@ -14,7 +13,8 @@ class Lab02Activity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setContentView(R.layout.activity_lab02)
+        binding = ActivityLab02Binding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         binding.main66Board.setOnClickListener {
             launchLab03(6, 6)

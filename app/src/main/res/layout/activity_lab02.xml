@@ -1,18 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+
+<androidx.gridlayout.widget.GridLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/favorites_grid"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="@dimen/inner_margin"
-    android:useDefaultMargins="true"
-    android:columnCount="3">
+    app:columnCount="3"
+    app:useDefaultMargins="true">
 
     <!-- Row 1 -->
     <Button
         android:id="@+id/main_6_6_board"
-        android:layout_rowWeight="1"
-        android:layout_columnWeight="1"
         android:width="0dp"
         android:tag="6 6"
         android:onClick="onClickBoardSize"
@@ -22,7 +21,9 @@
         app:icon="@drawable/baseline_rocket_lauch_24"
         app:iconGravity="textTop"
         app:iconPadding="@dimen/icon_padding"
-        app:iconSize="54dp" />
+        app:iconSize="54dp"
+        app:layout_columnWeight="1"
+        app:layout_rowWeight="1" />
 
     <Space
         android:layout_width="wrap_content"
@@ -31,8 +32,6 @@
 
     <Button
         android:id="@+id/main_4_4_board"
-        android:layout_rowWeight="1"
-        android:layout_columnWeight="1"
         android:width="0dp"
         android:tag="4 4"
         android:onClick="onClickBoardSize"
@@ -42,13 +41,13 @@
         app:icon="@drawable/baseline_rocket_lauch_24"
         app:iconGravity="textTop"
         app:iconPadding="@dimen/icon_padding"
-        app:iconSize="54dp" />
+        app:iconSize="54dp"
+        app:layout_columnWeight="1"
+        app:layout_rowWeight="1" />
 
     <!-- Row 2 -->
     <Button
         android:id="@+id/main_4_3_board"
-        android:layout_rowWeight="1"
-        android:layout_columnWeight="1"
         android:width="0dp"
         android:tag="4 3"
         android:onClick="onClickBoardSize"
@@ -58,7 +57,9 @@
         app:icon="@drawable/baseline_rocket_lauch_24"
         app:iconGravity="textTop"
         app:iconPadding="@dimen/icon_padding"
-        app:iconSize="54dp" />
+        app:iconSize="54dp"
+        app:layout_columnWeight="1"
+        app:layout_rowWeight="1" />
 
     <Space
         android:layout_width="wrap_content"
@@ -67,8 +68,6 @@
 
     <Button
         android:id="@+id/main_3_2_board"
-        android:layout_rowWeight="1"
-        android:layout_columnWeight="1"
         android:width="0dp"
         android:tag="3 2"
         android:onClick="onClickBoardSize"
@@ -78,6 +77,8 @@
         app:icon="@drawable/baseline_rocket_lauch_24"
         app:iconGravity="textTop"
         app:iconPadding="@dimen/icon_padding"
-        app:iconSize="54dp" />
+        app:iconSize="54dp"
+        app:layout_columnWeight="1"
+        app:layout_rowWeight="1" />
 
-</GridLayout>
+</androidx.gridlayout.widget.GridLayout>
