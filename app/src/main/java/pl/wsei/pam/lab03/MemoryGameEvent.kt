@@ -1,14 +1,13 @@
 package pl.wsei.pam.lab03
 
-import android.os.Bundle
 import android.view.Gravity
 import android.view.View
 import android.widget.GridLayout
 import android.widget.ImageButton
-import androidx.appcompat.app.AppCompatActivity
 import pl.wsei.pam.lab01.R
 import java.util.Stack
 import androidx.core.graphics.toColorInt
+import kotlin.math.abs
 
 data class MemoryGameEvent(
     val tiles: List<Tile>,
@@ -33,15 +32,14 @@ class MemoryBoardView(
         R.drawable.outline_adjust_24,
         R.drawable.outline_airplay_24,
         R.drawable.outline_align_flex_center_24,
-
         R.drawable.baseline_app_shortcut_24,
         R.drawable.baseline_apartment_24,
-        R.drawable.outline_ad_24,
-        R.drawable.outline_3p_24,
-        R.drawable.outline_add_location_24,
-        R.drawable.outline_adjust_24,
-        R.drawable.outline_airplay_24,
-        R.drawable.outline_align_flex_center_24
+        R.drawable.baseline_approval_24,
+        R.drawable.outline_1k_24,
+        R.drawable.outline_360_24,
+        R.drawable.outline_accessibility_24,
+        R.drawable.outline_123_24,
+        R.drawable.outline_add_alert_24
     )
 
     private val deckResource: Int = R.drawable.outline_archive_24
@@ -129,22 +127,18 @@ class MemoryBoardView(
 
         val matchResult = logic.process { tile.tileResource }
 
-        // Notify the activity (useful for showing toasts or scores)
         onGameChangeStateListener(MemoryGameEvent(matchedPair.toList(), matchResult))
 
         when (matchResult) {
             GameStates.NoMatch -> {
-                // Copy the current pair to a local variable for the delayed task
                 val mismatch = matchedPair.toList()
                 matchedPair.clear()
 
-                // Flip them back after 1 second so the user can memorize them
                 v.postDelayed({
                     mismatch.forEach { it.revealed = false }
                 }, 1000)
             }
             GameStates.Match -> {
-                // Cards stay revealed, disable clicking on them
                 matchedPair.forEach { it.removeOnClickListener() }
                 matchedPair.clear()
             }
@@ -152,7 +146,6 @@ class MemoryBoardView(
                 matchedPair.forEach { it.removeOnClickListener() }
                 matchedPair.clear()
 
-                // Optional: You can trigger a success message here
                 android.widget.Toast.makeText(v.context, "Congratulations! Game Finished!", android.widget.Toast.LENGTH_LONG).show()
             }
             GameStates.Matching -> {
@@ -183,14 +176,10 @@ class MemoryBoardView(
                 val tile = tiles["${row}x${col}"]
                 val storedValue = state[index]
                 if (tile != null) {
-                    val actualIconId = Math.abs(storedValue)
+                    val actualIconId = abs(storedValue)
                     tile.tileResource = actualIconId
 
-                    if (storedValue > 0) {
-                        tile.revealed = true
-                    } else {
-                        tile.revealed = false
-                    }
+                    tile.revealed = storedValue > 0
                 }
                 index++
             }
