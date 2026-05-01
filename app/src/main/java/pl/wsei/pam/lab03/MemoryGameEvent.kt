@@ -131,12 +131,7 @@ class MemoryBoardView(
 
         when (matchResult) {
             GameStates.NoMatch -> {
-                val mismatch = matchedPair.toList()
                 matchedPair.clear()
-
-                v.postDelayed({
-                    mismatch.forEach { it.revealed = false }
-                }, 1000)
             }
             GameStates.Match -> {
                 matchedPair.forEach { it.removeOnClickListener() }
@@ -145,11 +140,15 @@ class MemoryBoardView(
             GameStates.Finished -> {
                 matchedPair.forEach { it.removeOnClickListener() }
                 matchedPair.clear()
-
-                android.widget.Toast.makeText(v.context, "Congratulations! Game Finished!", android.widget.Toast.LENGTH_LONG).show()
             }
             GameStates.Matching -> {
             }
+        }
+    }
+
+    fun setEnabled(enabled: Boolean) {
+        for (i in 0 until gridLayout.childCount) {
+            gridLayout.getChildAt(i).isEnabled = enabled
         }
     }
 
