@@ -46,4 +46,5 @@
         vestibulum. Fusce dictum libero quis erat maximus, vitae volutpat diam dignissim.
     </string>
     <string name="title_activity_lab03">lab03</string>
+    <string name="board_activity_menu_sound">Sound</string>
 </resources>

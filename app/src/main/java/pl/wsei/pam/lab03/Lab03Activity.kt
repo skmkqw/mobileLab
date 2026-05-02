@@ -5,9 +5,13 @@ import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.media.MediaPlayer
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.animation.DecelerateInterpolator
 import android.widget.GridLayout
 import android.widget.ImageButton
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import pl.wsei.pam.lab01.R
 import java.util.Random
@@ -20,10 +24,14 @@ class Lab03Activity : AppCompatActivity() {
 
     lateinit var completionPlayer: MediaPlayer
     lateinit var negativePLayer: MediaPlayer
+    private var isSound: Boolean = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_lab03)
+
+        val toolbar: androidx.appcompat.widget.Toolbar = findViewById(R.id.toolbar)
+        setSupportActionBar(toolbar)
 
         mBoard = findViewById(R.id.gridLayoutBoard)
 
@@ -45,7 +53,7 @@ class Lab03Activity : AppCompatActivity() {
         mBoardModel.setOnGameChangeListener { event ->
             when (event.state) {
                 GameStates.Match -> {
-                    completionPlayer.start()
+                    if (isSound) completionPlayer.start()
                     mBoardModel.setEnabled(false)
                     var animationsFinished = 0
                     event.tiles.forEach { tile ->
@@ -58,7 +66,7 @@ class Lab03Activity : AppCompatActivity() {
                     }
                 }
                 GameStates.NoMatch -> {
-                    negativePLayer.start()
+                    if (isSound) negativePLayer.start()
                     mBoardModel.setEnabled(false)
                     var animationsFinished = 0
                     event.tiles.forEach { tile ->
@@ -72,7 +80,7 @@ class Lab03Activity : AppCompatActivity() {
                     }
                 }
                 GameStates.Finished -> {
-                    completionPlayer.start()
+                    if (isSound) completionPlayer.start()
                     mBoardModel.setEnabled(false)
                     var animationsFinished = 0
                     event.tiles.forEach { tile ->
@@ -80,7 +88,7 @@ class Lab03Activity : AppCompatActivity() {
                             animationsFinished++
                             if (animationsFinished == event.tiles.size) {
                                 mBoardModel.setEnabled(true)
-                                android.widget.Toast.makeText(this, "Gratulacje! Wygrana!", android.widget.Toast.LENGTH_LONG).show()
+                                Toast.makeText(this, "Gratulacje! Wygrana!", Toast.LENGTH_LONG).show()
                             }
                         }
                     }
@@ -150,5 +158,27 @@ class Lab03Activity : AppCompatActivity() {
         super.onSaveInstanceState(outState)
         val currentState = mBoardModel.getState()
         outState.putIntArray("board_state", currentState)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        val inflater: MenuInflater = menuInflater
+        inflater.inflate(R.menu.board_activity_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.board_activity_sound -> {
+                isSound = !isSound
+                if (isSound) {
+                    Toast.makeText(this, "Sound turn on", Toast.LENGTH_SHORT).show()
+                    item.setIcon(R.drawable.outline_alarm_on_24)
+                } else {
+                    Toast.makeText(this, "Sound turn off", Toast.LENGTH_SHORT).show()
+                    item.setIcon(R.drawable.outline_alarm_off_24)
+                }
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 }
