@@ -3,6 +3,7 @@ package pl.wsei.pam.lab03
 import android.animation.Animator
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.view.animation.DecelerateInterpolator
 import android.widget.GridLayout
@@ -16,6 +17,9 @@ class Lab03Activity : AppCompatActivity() {
     private lateinit var mBoardModel: MemoryBoardView
     private var rows: Int = 3
     private var cols: Int = 3
+
+    lateinit var completionPlayer: MediaPlayer
+    lateinit var negativePLayer: MediaPlayer
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,6 +45,7 @@ class Lab03Activity : AppCompatActivity() {
         mBoardModel.setOnGameChangeListener { event ->
             when (event.state) {
                 GameStates.Match -> {
+                    completionPlayer.start()
                     mBoardModel.setEnabled(false)
                     var animationsFinished = 0
                     event.tiles.forEach { tile ->
@@ -53,6 +58,7 @@ class Lab03Activity : AppCompatActivity() {
                     }
                 }
                 GameStates.NoMatch -> {
+                    negativePLayer.start()
                     mBoardModel.setEnabled(false)
                     var animationsFinished = 0
                     event.tiles.forEach { tile ->
@@ -66,6 +72,7 @@ class Lab03Activity : AppCompatActivity() {
                     }
                 }
                 GameStates.Finished -> {
+                    completionPlayer.start()
                     mBoardModel.setEnabled(false)
                     var animationsFinished = 0
                     event.tiles.forEach { tile ->
@@ -81,6 +88,18 @@ class Lab03Activity : AppCompatActivity() {
                 else -> {}
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        completionPlayer = MediaPlayer.create(applicationContext, R.raw.completion)
+        negativePLayer = MediaPlayer.create(applicationContext, R.raw.negative_guitar)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        completionPlayer.release()
+        negativePLayer.release()
     }
 
     private fun animatePairedButton(button: ImageButton, action: Runnable) {
