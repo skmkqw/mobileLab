@@ -33,5 +33,10 @@ xmlns:tools="http://schemas.android.com/tools">
         android:exported="false"
     />
 
+    <activity
+        android:name="pl.wsei.pam.lab06.Lab06Activity"
+        android:label="Lab 06 - Navigation"
+        android:exported="true" />
+
 </application>
 </manifest>
