@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.map
 interface TodoTaskRepository {
     fun getAllAsStream(): Flow<List<TodoTask>>
     fun getItemAsStream(id: Int): Flow<TodoTask?>
+    fun getNearestUncompletedTaskAsStream(): Flow<TodoTask?>
     suspend fun insertItem(item: TodoTask)
     suspend fun deleteItem(item: TodoTask)
     suspend fun updateItem(item: TodoTask)
@@ -21,6 +22,10 @@ class DatabaseTodoTaskRepository(val dao: TodoTaskDao) : TodoTaskRepository {
 
     override fun getItemAsStream(id: Int): Flow<TodoTask?> {
         return dao.find(id).map { it.toModel() }
+    }
+
+    override fun getNearestUncompletedTaskAsStream(): Flow<TodoTask?> {
+        return dao.getNearestUncompletedTask().map { it?.toModel() }
     }
 
     override suspend fun insertItem(item: TodoTask) {

@@ -17,6 +17,9 @@ interface TodoTaskDao {
     @Query("Select * from tasks ORDER BY deadline DESC")
     fun findAll(): Flow<List<TodoTaskEntity>>
 
+    @Query("Select * from tasks where isDone = 0 ORDER BY deadline ASC LIMIT 1")
+    fun getNearestUncompletedTask(): Flow<TodoTaskEntity?>
+
     @Query("Select * from tasks where id == :id")
     fun find(id: Int): Flow<TodoTaskEntity>
 }
