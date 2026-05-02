@@ -3,6 +3,7 @@ package pl.wsei.pam.lab06
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -19,36 +20,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import java.time.Instant
-import java.time.LocalDate
-import java.time.ZoneId
-
-enum class Priority {
-    High, Medium, Low
-}
-
-data class TodoTask(
-    val title: String,
-    val deadline: LocalDate,
-    val isDone: Boolean,
-    val priority: Priority
-)
-
-fun todoTasks(): List<TodoTask> {
-    return listOf(
-        TodoTask("Programming", LocalDate.of(2024, 4, 18), false, Priority.Low),
-        TodoTask("Teaching", LocalDate.of(2024, 5, 12), false, Priority.High),
-        TodoTask("Learning", LocalDate.of(2024, 6, 28), true, Priority.Low),
-        TodoTask("Cooking", LocalDate.of(2024, 8, 18), false, Priority.Medium),
-    )
-}
+import kotlinx.coroutines.launch
+import pl.wsei.pam.lab06.data.Priority
+import pl.wsei.pam.lab06.data.TodoTask
 
 @Composable
 fun Lab06Theme(content: @Composable () -> Unit) {
@@ -93,7 +76,8 @@ fun AppTopBar(
     navController: NavController,
     title: String,
     showBackIcon: Boolean,
-    route: String
+    route: String,
+    onSaveClick: () -> Unit = {}
 ) {
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(
@@ -112,9 +96,9 @@ fun AppTopBar(
             }
         },
         actions = {
-            if (route != "form") {
+            if (route == "list") {
                 OutlinedButton(
-                    onClick = { navController.navigate("list") }
+                    onClick = onSaveClick
                 ) {
                     Text(
                         text = "Zapisz",
@@ -134,7 +118,11 @@ fun AppTopBar(
 }
 
 @Composable
-fun ListScreen(navController: NavController) {
+fun ListScreen(
+    navController: NavController,
+    viewModel: ListViewModel = viewModel(factory = AppViewModelProvider.Factory)
+) {
+    val listUiState by viewModel.listUiState.collectAsState()
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(
@@ -161,7 +149,7 @@ fun ListScreen(navController: NavController) {
         },
         content = { padding ->
             LazyColumn(modifier = Modifier.padding(padding)) {
-                items(items = todoTasks()) { item ->
+                items(items = listUiState.items, key = { it.id }) { item ->
                     ListItem(item = item)
                 }
             }
@@ -170,104 +158,128 @@ fun ListScreen(navController: NavController) {
 }
 
 @Composable
-fun FormScreen(navController: NavController) {
-    var title by remember { mutableStateOf("") }
-    var priority by remember { mutableStateOf(Priority.Medium) }
-    var deadline by remember { mutableStateOf(LocalDate.now()) }
-    var isDone by remember { mutableStateOf(false) }
-    var showDatePicker by remember { mutableStateOf(false) }
+fun FormScreen(
+    navController: NavController,
+    viewModel: FormViewModel = viewModel(factory = AppViewModelProvider.Factory)
+) {
+    val coroutineScope = rememberCoroutineScope()
 
     Scaffold(
         topBar = {
             AppTopBar(
                 navController = navController,
-                title = "New Task",
+                title = "Form",
                 showBackIcon = true,
-                route = "list"
+                route = "list",
+                onSaveClick = {
+                    coroutineScope.launch {
+                        viewModel.save()
+                        navController.navigate("list")
+                    }
+                }
             )
         },
         content = { padding ->
-            Column(
-                modifier = Modifier
-                    .padding(padding)
-                    .padding(16.dp)
-                    .fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                OutlinedTextField(
-                    value = title,
-                    onValueChange = { title = it },
-                    label = { Text("Title") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                Text("Priority", fontWeight = FontWeight.Bold)
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Priority.values().forEach { p ->
-                        RadioButton(
-                            selected = (priority == p),
-                            onClick = { priority = p }
-                        )
-                        Text(text = p.name, modifier = Modifier.padding(end = 8.dp))
-                    }
-                }
-
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text("Deadline: $deadline")
-                    Button(onClick = { showDatePicker = true }) {
-                        Text("Select Date")
-                    }
-                }
-
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Checkbox(checked = isDone, onCheckedChange = { isDone = it })
-                    Text("Is Done")
-                }
-
-                if (showDatePicker) {
-                    MyDatePickerDialog(
-                        onDateSelected = {
-                            deadline = it
-                            showDatePicker = false
-                        },
-                        onDismiss = { showDatePicker = false }
-                    )
-                }
-            }
+            TodoTaskInputBody(
+                todoUiState = viewModel.todoTaskUiState,
+                onItemValueChange = viewModel::updateUiState,
+                modifier = Modifier.padding(padding)
+            )
         }
     )
 }
 
+@Composable
+fun TodoTaskInputBody(
+    todoUiState: TodoTaskUiState,
+    onItemValueChange: (TodoTaskForm) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier.padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        TodoTaskInputForm(
+            item = todoUiState.todoTask,
+            onValueChange = onItemValueChange,
+            modifier = modifier
+        )
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MyDatePickerDialog(
-    onDateSelected: (LocalDate) -> Unit,
-    onDismiss: () -> Unit
+fun TodoTaskInputForm(
+    item: TodoTaskForm,
+    modifier: Modifier = Modifier,
+    onValueChange: (TodoTaskForm) -> Unit = {},
+    enabled: Boolean = true
 ) {
-    val datePickerState = rememberDatePickerState()
-    DatePickerDialog(
-        onDismissRequest = onDismiss,
-        confirmButton = {
-            TextButton(onClick = {
-                datePickerState.selectedDateMillis?.let {
-                    val date = Instant.ofEpochMilli(it).atZone(ZoneId.systemDefault()).toLocalDate()
-                    onDateSelected(date)
-                }
-            }) {
-                Text("OK")
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Cancel")
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Text("Tytuł zadania", fontWeight = FontWeight.Bold)
+        TextField(
+            value = item.title,
+            onValueChange = {
+                onValueChange(item.copy(title = it))
+            },
+            modifier = Modifier.fillMaxWidth(),
+            enabled = enabled
+        )
+
+        Text("Priorytet", fontWeight = FontWeight.Bold)
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Priority.entries.forEach { p ->
+                RadioButton(
+                    selected = (item.priority == p.name),
+                    onClick = { onValueChange(item.copy(priority = p.name)) },
+                    enabled = enabled
+                )
+                Text(text = p.name, modifier = Modifier.padding(end = 8.dp))
             }
         }
-    ) {
-        DatePicker(state = datePickerState)
+
+        val datePickerState = rememberDatePickerState(
+            initialDisplayMode = DisplayMode.Picker,
+            yearRange = IntRange(2000, 2030),
+            initialSelectedDateMillis = item.deadline,
+        )
+        var showDialog by remember { mutableStateOf(false) }
+
+        Text(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable(enabled = enabled) {
+                    showDialog = true
+                },
+            text = "Data: ${pl.wsei.pam.lab06.data.LocalDateConverter.fromMillis(item.deadline)}",
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.headlineSmall
+        )
+
+        if (showDialog) {
+            DatePickerDialog(
+                onDismissRequest = { showDialog = false },
+                confirmButton = {
+                    Button(onClick = {
+                        showDialog = false
+                        onValueChange(item.copy(deadline = datePickerState.selectedDateMillis!!))
+                    }) {
+                        Text("Pick")
+                    }
+                }
+            ) {
+                DatePicker(state = datePickerState, showModeToggle = true)
+            }
+        }
+
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Checkbox(
+                checked = item.isDone,
+                onCheckedChange = { onValueChange(item.copy(isDone = it)) },
+                enabled = enabled
+            )
+            Text("Wykonane")
+        }
     }
 }
 
